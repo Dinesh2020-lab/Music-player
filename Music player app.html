@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Colorful Music Player</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff7e5f, #feb47b);
+      color: #fff;
+    }
+    .player {
+      background: linear-gradient(145deg, #6a11cb, #2575fc);
+      padding: 30px;
+      border-radius: 25px;
+      width: 340px;
+      text-align: center;
+      box-shadow:
+        0 4px 15px rgba(255, 126, 95, 0.5),
+        0 6px 20px rgba(37, 117, 252, 0.6);
+      user-select: none;
+    }
+    #title {
+      font-size: 28px;
+      margin-bottom: 25px;
+      font-weight: 700;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    .buttons {
+      margin-bottom: 20px;
+    }
+    .buttons button {
+      font-size: 20px;
+      border: none;
+      border-radius: 15px;
+      padding: 14px 26px;
+      margin: 0 12px;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(90deg, #f7971e, #ffd200);
+      box-shadow: 0 4px 10px rgba(247, 151, 30, 0.6);
+      transition: background 0.3s ease, transform 0.2s ease;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      user-select: none;
+    }
+    .buttons button:hover {
+      background: linear-gradient(90deg, #ffd200, #f7971e);
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(255, 210, 0, 0.8);
+    }
+    #progress {
+      width: 100%;
+      cursor: pointer;
+      height: 12px;
+      border-radius: 8px;
+      background: #ddd;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    #progress::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #ffd200;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #f7971e;
+      transition: background 0.3s ease;
+      margin-top: -4px;
+      position: relative;
+      z-index: 3;
+    }
+    #progress::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #ffd200;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #f7971e;
+      transition: background 0.3s ease;
+      position: relative;
+      z-index: 3;
+    }
+    #progress::-webkit-slider-runnable-track {
+      height: 12px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+    }
+    #progress::-moz-range-track {
+      height: 12px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+    }
+  </style>
+</head>
+<body>
+
+<div class="player">
+  <h2 id="title">Loading...</h2>
+  <audio id="audio"></audio>
+  <div class="buttons">
+    <button id="prev">Prev</button>
+    <button id="play">Play</button>
+    <button id="next">Next</button>
+  </div>
+  <input type="range" id="progress" value="0" max="100" />
+</div>
+
+<script>
+  const songs = [
+    { name: "Track 1", file: "track1.mp3" },
+    { name: "Track 2", file: "track2.mp3" },
+    { name: "Track 3", file: "track3.mp3" }
+  ];
+
+  let currentIndex = 0;
+
+  const audio = document.getElementById("audio");
+  const title = document.getElementById("title");
+  const playBtn = document.getElementById("play");
+  const prevBtn = document.getElementById("prev");
+  const nextBtn = document.getElementById("next");
+  const progress = document.getElementById("progress");
+
+  function loadSong(index) {
+    title.textContent = songs[index].name;
+    audio.src = songs[index].file;
+  }
+
+  function playPauseSong() {
+    if (audio.paused) {
+      audio.play();
+      playBtn.textContent = "Pause";
+    } else {
+      audio.pause();
+      playBtn.textContent = "Play";
+    }
+  }
+
+  function nextSong() {
+    currentIndex = (currentIndex + 1) % songs.length;
+    loadSong(currentIndex);
+    audio.play();
+    playBtn.textContent = "Pause";
+  }
+
+  function prevSong() {
+    currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+    loadSong(currentIndex);
+    audio.play();
+    playBtn.textContent = "Pause";
+  }
+
+  audio.addEventListener("timeupdate", () => {
+    if (audio.duration) {
+      progress.value = (audio.currentTime / audio.duration) * 100;
+    }
+  });
+
+  progress.addEventListener("input", () => {
+    audio.currentTime = (progress.value / 100) * audio.duration;
+  });
+
+  playBtn.addEventListener("click", playPauseSong);
+  nextBtn.addEventListener("click", nextSong);
+  prevBtn.addEventListener("click", prevSong);
+
+  audio.addEventListener("ended", nextSong);
+
+  loadSong(currentIndex);
+</script>
+
+</body>
+</html>
